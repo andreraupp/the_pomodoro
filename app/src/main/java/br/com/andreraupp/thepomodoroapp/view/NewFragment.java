@@ -1,12 +1,16 @@
 package br.com.andreraupp.thepomodoroapp.view;
 
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import br.com.andreraupp.thepomodoroapp.R;
 
@@ -15,20 +19,48 @@ import br.com.andreraupp.thepomodoroapp.R;
  */
 
 public class NewFragment extends Fragment {
+    private static final long ONE_SECOND_TO_MILLESECOND = 1000;
+    private static final long TIME_STANDARD = 1500000;
+    private FloatingActionButton startStopButton;
+    private TextView timerTextView;
+    private CountDownTimer countDownTimer;
+    private boolean clicked = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_new, container, false);
+        startStopButton = (FloatingActionButton) rootView.findViewById(R.id.startStopFab);
+        timerTextView = (TextView)  rootView.findViewById(R.id.timerText);
 
-        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        countDownTimer = new CountDownTimer(TIME_STANDARD, ONE_SECOND_TO_MILLESECOND) {
+            public void onTick(long millisUntilFinished) {
+                timerTextView.setText(String.format(Locale.getDefault(), "%02d:%02d",
+                        TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished),
+                        TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))));
+            }
+
+            public void onFinish() {
+                timerTextView.setText(R.string.zero_time);
+                startStopButton.setImageResource(android.R.drawable.ic_media_play);
+                clicked = false;
+            }
+        };
+
+        startStopButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void onClick(View v) {
+                if (!clicked) {
+                    startStopButton.setImageResource(R.drawable.ic_stop_white);
+                    countDownTimer.start();
+                    clicked = true;
+                } else {
+                    startStopButton.setImageResource(R.drawable.ic_play_arrow_white);
+                    countDownTimer.cancel();
+                    clicked = false;
+                }
             }
         });
-
         return rootView;
     }
 }

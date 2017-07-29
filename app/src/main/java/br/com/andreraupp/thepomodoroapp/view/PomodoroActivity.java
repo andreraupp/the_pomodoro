@@ -1,5 +1,8 @@
 package br.com.andreraupp.thepomodoroapp.view;
 
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -12,7 +15,7 @@ import br.com.andreraupp.thepomodoroapp.R;
 
 public class PomodoroActivity extends AppCompatActivity {
     private HistoryFragment historyFragment;
-
+    private Ringtone ringtoneNotification;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,5 +81,19 @@ public class PomodoroActivity extends AppCompatActivity {
             }
             return null;
         }
+    }
+
+    public void playNotification() {
+        try {
+            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+            ringtoneNotification = RingtoneManager.getRingtone(getApplicationContext(), notification);
+            ringtoneNotification.play();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void stopNotification() {
+        ringtoneNotification.stop();
     }
 }

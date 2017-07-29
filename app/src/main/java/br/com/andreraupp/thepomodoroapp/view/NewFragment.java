@@ -1,9 +1,14 @@
 package br.com.andreraupp.thepomodoroapp.view;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +29,8 @@ import br.com.andreraupp.thepomodoroapp.util.Situation;
 
 public class NewFragment extends Fragment {
     private static final long ONE_SECOND_TO_MILLESECOND = 1000;
-    private static final long TIME_STANDARD = 1500000;
+    //private static final long TIME_STANDARD = 1500000;
+    private static final long TIME_STANDARD = 5000;
     private FloatingActionButton startStopButton;
     private TextView timerTextView;
     private CountDownTimer countDownTimer;
@@ -45,6 +51,20 @@ public class NewFragment extends Fragment {
             }
 
             public void onFinish() {
+                ((PomodoroActivity)getActivity()).playNotification();
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage(R.string.finished_message)
+                        .setCancelable(false)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                ((PomodoroActivity)getActivity()).stopNotification();
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+
+
                 pomodoroController.insertPomodoro(new Pomodoro(setFormatedTimer(TIME_STANDARD), new Date(), Situation.FINISHED));
                 timerTextView.setText(R.string.zero_time);
                 startStopButton.setImageResource(android.R.drawable.ic_media_play);
@@ -74,5 +94,22 @@ public class NewFragment extends Fragment {
     private String setFormatedTimer(Long millesecounds) {
         return String.format(Locale.getDefault(), "%02d:%02d", TimeUnit.MILLISECONDS.toMinutes(millesecounds),
                 TimeUnit.MILLISECONDS.toSeconds(millesecounds) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millesecounds)));
+    }
+
+    public class NotificationDialog extends DialogFragment {
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            return new AlertDialog.Builder(getActivity())
+                    .setTitle("Title")
+                    .setMessage("Sure you wanna do this!")
+                    .setPositiveButton(android.R.string.yes,  new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dismiss();
+
+                        }
+                    }).create();
+        }
     }
 }

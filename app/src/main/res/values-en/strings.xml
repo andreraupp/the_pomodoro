@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">The Pomodoro App</string>
+    <string name="title_bar_new">New</string>
+    <string name="title_bar_history">History</string>
+    <string name="zero_time">00:00</string>
+    <string name="finished">Finished</string>
+    <string name="stopped">Stopped</string>
+    <string name="running">Running</string>
+    <string name="finished_message">Finished Pomodor Time</string>
+    <string name="date_format">MM/dd/yyyy</string>
+    <string name="ok">OK</string>
+</resources>
